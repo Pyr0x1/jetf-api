@@ -16,7 +16,7 @@ import it.pyrox.justetf.model.SearchResponse;
 public class JustETFTest {
 	
 	@Test
-	public void searchWithLocaleITAndNoQueryAndNoRangeThenReturnFirst25Results() {
+	public void testSearchWithLocaleITAndNoQueryAndNoRangeThenReturnFirst25Results() {
 		SearchResponse response = JustETF.search(Locale.ITALY, null);
 		assertNotNull(response);
 		assertNotNull(response.getRecordsTotal());
@@ -29,7 +29,7 @@ public class JustETFTest {
 	}
 	
 	@Test
-	public void searchWithLocaleITAndNoQueryAndRangeFrom10To20ThenReturnCorrespondingResults() {
+	public void testSearchWithLocaleITAndNoQueryAndRangeFrom10To20ThenReturnCorrespondingResults() {
 		SearchResponse responseFirst25 = JustETF.search(Locale.ITALY, null);
 		assertNotNull(responseFirst25);
 		assertNotNull(responseFirst25.getRecordsTotal());
@@ -58,7 +58,7 @@ public class JustETFTest {
 	}
 	
 	@Test
-	public void searchWithLocaleITAndQueryByTickerAndNoRangeThenReturnOneResult() {
+	public void testSearchWithLocaleITAndQueryByTickerAndNoRangeThenReturnOneResult() {
 		SearchResponse response = JustETF.search(Locale.ITALY, "vwce");
 		assertNotNull(response);
 		assertNotNull(response.getRecordsTotal());
@@ -72,7 +72,7 @@ public class JustETFTest {
 	}
 	
 	@Test
-	public void searchWithPriceAndLocaleITAndQueryByTickerAndNoRangeThenReturnOneResultWithPrice() {
+	public void testSearchWithPriceAndLocaleITAndQueryByTickerAndNoRangeThenReturnOneResultWithPrice() {
 		SearchResponse response = JustETF.searchWithPrice(Locale.ITALY, "vwce");
 		assertNotNull(response);
 		assertNotNull(response.getRecordsTotal());
@@ -90,7 +90,7 @@ public class JustETFTest {
 	}
 	
 	@Test
-	public void getPriceWithLocaleITAndIsinThenReturnPriceInEur() {
+	public void testGetPriceWithLocaleITAndIsinThenReturnPriceInEur() {
 		Price price = JustETF.getPrice("IE00BK5BQT80", Locale.ITALY);
 		assertNotNull(price);
 		assertNotNull(price.getCurrency());
@@ -99,7 +99,7 @@ public class JustETFTest {
 	}
 	
 	@Test
-	public void getPriceWithLocaleUKAndIsinThenReturnPriceInGbp() {
+	public void testGetPriceWithLocaleUKAndIsinThenReturnPriceInGbp() {
 		Price price = JustETF.getPrice("IE00BK5BQT80", Locale.UK);
 		assertNotNull(price);
 		assertNotNull(price.getCurrency());
@@ -108,7 +108,7 @@ public class JustETFTest {
 	}
 	
 	@Test
-	public void getPriceWithLocaleCHAndIsinThenReturnPriceInCHF() {
+	public void testGetPriceWithLocaleCHAndIsinThenReturnPriceInCHF() {
 		Price price = JustETF.getPrice("IE00BK5BQT80", new Locale.Builder().setLanguage("en").setRegion("CH").build());
 		assertNotNull(price);
 		assertNotNull(price.getCurrency());
