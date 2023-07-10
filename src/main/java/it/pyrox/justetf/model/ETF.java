@@ -1,8 +1,5 @@
 package it.pyrox.justetf.model;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-
 public class ETF {
 
 	private String fiveYearVolatilityCUR;
@@ -43,9 +40,8 @@ public class ETF {
 	private String savingsPlanReady;
 	private String isin;
 	private String yearReturn1CUR;
-	// This field is populated by scraping the page of the ETF
-	private Price price;
-	private Map<String, Object> additionalProperties = new LinkedHashMap<>();
+	// This field is populated by calling the relative api
+	private Quote quote;
 	
 	public String getFiveYearVolatilityCUR() {
 		return fiveYearVolatilityCUR;
@@ -350,20 +346,12 @@ public class ETF {
 	public void setYearReturn1CUR(String yearReturn1CUR) {
 		this.yearReturn1CUR = yearReturn1CUR;
 	}
-	
-	public Price getPrice() {
-		return price;
+
+	public Quote getQuote() {
+		return quote;
 	}
 
-	public void setPrice(Price price) {
-		this.price = price;
-	}
-
-	public Map<String, Object> getAdditionalProperties() {
-		return this.additionalProperties;
-	}
-	
-	public void setAdditionalProperty(String name, Object value) {
-		this.additionalProperties.put(name, value);
-	}
+	public void setQuote(Quote quote) {
+		this.quote = quote;
+	}	
 }

@@ -4,13 +4,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Currency;
 import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
 
 import it.pyrox.justetf.model.ETF;
-import it.pyrox.justetf.model.Price;
+import it.pyrox.justetf.model.Quote;
 import it.pyrox.justetf.model.SearchResponse;
 
 public class JustETFTest {
@@ -83,36 +82,40 @@ public class JustETFTest {
 		assertNotNull(response.getData());
 		assertEquals(1, response.getData().size());
 		assertEquals("VWCE", response.getData().get(0).getTicker());
-		assertNotNull(response.getData().get(0).getPrice());
-		assertNotNull(response.getData().get(0).getPrice().getCurrency());
-		assertNotNull(response.getData().get(0).getPrice().getValue());
-		assertTrue(response.getData().get(0).getPrice().getValue() > 0);
+		assertNotNull(response.getData().get(0).getQuote());
+		assertNotNull(response.getData().get(0).getQuote().getLatestQuote());
+		assertNotNull(response.getData().get(0).getQuote().getLatestQuote().getLocalized());
+		assertNotNull(response.getData().get(0).getQuote().getLatestQuote().getRaw());
+		assertTrue(response.getData().get(0).getQuote().getLatestQuote().getRaw() > 0);
 	}
 	
 	@Test
-	public void testGetPriceWithLocaleITAndIsinThenReturnPriceInEur() {
-		Price price = JustETF.getPrice("IE00BK5BQT80", Locale.ITALY);
-		assertNotNull(price);
-		assertNotNull(price.getCurrency());
-		assertEquals(Currency.getInstance("EUR"), price.getCurrency());
-		assertNotNull(price.getValue());
+	public void testGetQuoteWithLocaleIT() {
+		Quote quote = JustETF.getQuote("IE00BK5BQT80", new Locale.Builder().setLanguage("it").setRegion("IT").build());
+		assertNotNull(quote);
+		assertNotNull(quote.getLatestQuote());
+		assertNotNull(quote.getLatestQuote().getLocalized());
+		assertNotNull(quote.getLatestQuote().getRaw());
+		assertTrue(quote.getLatestQuote().getRaw() > 0);
 	}
 	
 	@Test
-	public void testGetPriceWithLocaleUKAndIsinThenReturnPriceInGbp() {
-		Price price = JustETF.getPrice("IE00BK5BQT80", Locale.UK);
-		assertNotNull(price);
-		assertNotNull(price.getCurrency());
-		assertEquals(Currency.getInstance("GBP"), price.getCurrency());
-		assertNotNull(price.getValue());
+	public void testGetQuoteWithLocaleUK() {
+		Quote quote = JustETF.getQuote("IE00BK5BQT80", Locale.UK);
+		assertNotNull(quote);
+		assertNotNull(quote.getLatestQuote());
+		assertNotNull(quote.getLatestQuote().getLocalized());
+		assertNotNull(quote.getLatestQuote().getRaw());
+		assertTrue(quote.getLatestQuote().getRaw() > 0);
 	}
 	
 	@Test
-	public void testGetPriceWithLocaleCHAndIsinThenReturnPriceInCHF() {
-		Price price = JustETF.getPrice("IE00BK5BQT80", new Locale.Builder().setLanguage("en").setRegion("CH").build());
-		assertNotNull(price);
-		assertNotNull(price.getCurrency());
-		assertEquals(Currency.getInstance("CHF"), price.getCurrency());
-		assertNotNull(price.getValue());
+	public void testGetQuoteWithLocaleCH() {
+		Quote quote = JustETF.getQuote("IE00BK5BQT80", new Locale.Builder().setLanguage("en").setRegion("CH").build());
+		assertNotNull(quote);
+		assertNotNull(quote.getLatestQuote());
+		assertNotNull(quote.getLatestQuote().getLocalized());
+		assertNotNull(quote.getLatestQuote().getRaw());
+		assertTrue(quote.getLatestQuote().getRaw() > 0);
 	}
 }

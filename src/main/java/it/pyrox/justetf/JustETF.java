@@ -8,34 +8,26 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.text.NumberFormat;
-import java.text.ParseException;
 import java.util.Currency;
 import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import it.pyrox.justetf.model.ETF;
-import it.pyrox.justetf.model.Price;
+import it.pyrox.justetf.model.Quote;
 import it.pyrox.justetf.model.SearchResponse;
 
 public class JustETF {
 	
 	private static final String BASE_URL = "https://www.justetf.com/";
 	private static final String SEARCH_PATH = "servlet/etfs-table";
-	private static final String DETAILS_PATH = "etf-profile.html";
-	private static final String CLASS_INFOBOX = "infobox";
-	private static final String CLASS_VAL = "val";
-	private static final String TAG_SPAN = "span";
+	private static final String QUOTE_PATH_1 = "api/etfs/";
+	private static final String QUOTE_PATH_2 = "/quote";
 	private static final Integer DEFAULT_START = 0;
 	private static final Integer DEFAULT_LENGTH = 25;
 	private static final String PARAM_DRAW = "draw";
@@ -50,76 +42,33 @@ public class JustETF {
 	
 	private JustETF() {}
 	
-	public static Price getPrice(String isin, Locale locale) {
-		String lang = locale.getLanguage();
-		String url = BASE_URL + lang + "/" + DETAILS_PATH + "?isin=" + isin;
-		Price result = null;
-		Price price = null;
+	public static Quote getQuote(String isin, Locale locale) {
+		Quote quote = null;
+		Currency currency = Currency.getInstance(locale);
+		
+		if (isin == null || isin.isEmpty() || locale == null || currency == null) {
+			return quote;
+		}
 		
 		try {
-			Document doc = Jsoup.connect(url).cookies(getCookies(locale)).get();
-			Elements infoboxes = doc.getElementsByClass(CLASS_INFOBOX);
-			if (infoboxes.isEmpty()) {
-				return result;
-			}
-			for (Element infobox : infoboxes) {
-				Elements vals = infobox.getElementsByClass(CLASS_VAL);
-				if (vals.isEmpty()) {
-					return result;
-				}
-				for (Element val : vals) {
-					Elements spans = val.getElementsByTag(TAG_SPAN);
-					if (spans.isEmpty()) {
-						return result;
-					}					
-					price = getPrice(spans, locale);
-					if (price != null && price.getValue() != null) {
-						result = price;
-						return result;
-					}
-				}
-			}
-		} catch (IOException e) {
+			HttpRequest httpRequest = HttpRequest.newBuilder(new URI(BASE_URL + QUOTE_PATH_1 + isin + QUOTE_PATH_2 + "?locale=" + locale.getLanguage() + "&currency=" + currency.getCurrencyCode()))
+												 .GET()
+										         .build();
+			
+			HttpClient client = HttpClient.newHttpClient();
+			
+			HttpResponse<String> httpResponse = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+			
+			quote = new ObjectMapper().readValue(httpResponse.body(), Quote.class);					
+		} catch (URISyntaxException | IOException e) {
 			logger.debug(e.getMessage());
+		} catch (InterruptedException e) {
+			logger.debug(e.getMessage());
+			Thread.currentThread().interrupt();
 		}
 		
-		return result;
-	}
-	
-	private static Map<String, String> getCookies(Locale locale) {
-		return Map.of("language_", locale.getLanguage(), 
-					  "universeCountry_", locale.getCountry());
-	}
-	
-	private static Price getPrice(Elements spans, Locale locale) {
-		Price result = null;
-				
-		boolean foundCurr = false;
-		boolean foundPrice = false;
-		Double tmpDouble = null;
-		Currency currency = Currency.getInstance(locale);
-		for (Element span : spans) {
-			String text = span.text();
-			if (currency.getCurrencyCode().equals(text)) {
-				foundCurr = true;
-			}
-			else {
-				try {
-					NumberFormat format = NumberFormat.getInstance(locale);
-					Number num = format.parse(text);
-					tmpDouble = num.doubleValue();
-					foundPrice = true;
-				} catch (ParseException e) {
-					foundPrice = false;
-				}
-			}
-		}
-		if (foundCurr && foundPrice) {
-			result = new Price(tmpDouble, currency);
-		}
-		
-		return result;
-	}
+		return quote;
+	}	
 	
 	public static SearchResponse search(Locale locale, String query, int start, int length) {
 		SearchResponse response = null;
@@ -155,8 +104,8 @@ public class JustETF {
 		
 		if (response != null && response.getData() != null && !response.getData().isEmpty()) {
 			for (ETF etfData : response.getData()) {
-				Price price = getPrice(etfData.getIsin(), locale);
-				etfData.setPrice(price);
+				Quote quote = getQuote(etfData.getIsin(), locale);
+				etfData.setQuote(quote);
 			}
 		}
 		
