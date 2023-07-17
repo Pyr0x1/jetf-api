@@ -72,7 +72,7 @@ public class JustETFTest {
 	
 	@Test
 	public void testSearchWithPriceAndLocaleITAndQueryByTickerAndNoRangeThenReturnOneResultWithPrice() {
-		SearchResponse response = JustETF.searchWithPrice(Locale.ITALY, "vwce");
+		SearchResponse response = JustETF.searchWithQuote(Locale.ITALY, "vwce");
 		assertNotNull(response);
 		assertNotNull(response.getRecordsTotal());
 		assertTrue(response.getRecordsTotal() > 0);

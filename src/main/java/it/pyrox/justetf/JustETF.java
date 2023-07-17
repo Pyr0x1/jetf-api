@@ -99,7 +99,7 @@ public class JustETF {
 		return search(locale, query, DEFAULT_START, DEFAULT_LENGTH);
 	}
 	
-	public static SearchResponse searchWithPrice(Locale locale, String query, int start, int length) {
+	public static SearchResponse searchWithQuote(Locale locale, String query, int start, int length) {
 		SearchResponse response = search(locale, query, start, length);
 		
 		if (response != null && response.getData() != null && !response.getData().isEmpty()) {
@@ -112,8 +112,8 @@ public class JustETF {
 		return response;
 	}
 	
-	public static SearchResponse searchWithPrice(Locale locale, String query) {
-		return searchWithPrice(locale, query, DEFAULT_START, DEFAULT_LENGTH);
+	public static SearchResponse searchWithQuote(Locale locale, String query) {
+		return searchWithQuote(locale, query, DEFAULT_START, DEFAULT_LENGTH);
 	}
 	
 	private static String getUrlEncodedParams(Locale locale, int start, int length, String query) {
