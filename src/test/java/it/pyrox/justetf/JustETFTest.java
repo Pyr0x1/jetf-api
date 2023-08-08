@@ -12,11 +12,11 @@ import it.pyrox.justetf.model.ETF;
 import it.pyrox.justetf.model.Quote;
 import it.pyrox.justetf.model.SearchResponse;
 
-public class JustETFTest {
+class JustETFTest {
 	
 	@Test
-	public void testSearchWithLocaleITAndNoQueryAndNoRangeThenReturnFirst25Results() {
-		SearchResponse response = JustETF.search(Locale.ITALY, null);
+	void testSearchWithLocaleITAndNoQueryAndNoRangeThenReturnFirst25Results() {
+		SearchResponse response = new JustETF().search(Locale.ITALY, null);
 		assertNotNull(response);
 		assertNotNull(response.getRecordsTotal());
 		assertTrue(response.getRecordsTotal() > 0);
@@ -28,8 +28,8 @@ public class JustETFTest {
 	}
 	
 	@Test
-	public void testSearchWithLocaleITAndNoQueryAndRangeFrom10To20ThenReturnCorrespondingResults() {
-		SearchResponse responseFirst25 = JustETF.search(Locale.ITALY, null);
+	void testSearchWithLocaleITAndNoQueryAndRangeFrom10To20ThenReturnCorrespondingResults() {
+		SearchResponse responseFirst25 = new JustETF().search(Locale.ITALY, null);
 		assertNotNull(responseFirst25);
 		assertNotNull(responseFirst25.getRecordsTotal());
 		assertTrue(responseFirst25.getRecordsTotal() > 0);
@@ -38,7 +38,7 @@ public class JustETFTest {
 		assertEquals(responseFirst25.getRecordsFiltered(), responseFirst25.getRecordsTotal());
 		assertNotNull(responseFirst25.getData());
 		assertTrue(responseFirst25.getData().size() > 0 && responseFirst25.getData().size() <= 25);
-		SearchResponse responseFrom10To20 = JustETF.search(Locale.ITALY, null, 10, 10);
+		SearchResponse responseFrom10To20 = new JustETF().search(Locale.ITALY, null, 10, 10);
 		assertNotNull(responseFrom10To20);
 		assertNotNull(responseFrom10To20.getRecordsTotal());
 		assertTrue(responseFrom10To20.getRecordsTotal() > 0);
@@ -57,8 +57,8 @@ public class JustETFTest {
 	}
 	
 	@Test
-	public void testSearchWithLocaleITAndQueryByTickerAndNoRangeThenReturnOneResult() {
-		SearchResponse response = JustETF.search(Locale.ITALY, "vwce");
+	void testSearchWithLocaleITAndQueryByTickerAndNoRangeThenReturnOneResult() {
+		SearchResponse response = new JustETF().search(Locale.ITALY, "vwce");
 		assertNotNull(response);
 		assertNotNull(response.getRecordsTotal());
 		assertTrue(response.getRecordsTotal() > 0);
@@ -71,8 +71,8 @@ public class JustETFTest {
 	}
 	
 	@Test
-	public void testSearchWithPriceAndLocaleITAndQueryByTickerAndNoRangeThenReturnOneResultWithPrice() {
-		SearchResponse response = JustETF.searchWithQuote(Locale.ITALY, "vwce");
+	void testSearchWithPriceAndLocaleITAndQueryByTickerAndNoRangeThenReturnOneResultWithPrice() {
+		SearchResponse response = new JustETF().searchWithQuote(Locale.ITALY, "vwce");
 		assertNotNull(response);
 		assertNotNull(response.getRecordsTotal());
 		assertTrue(response.getRecordsTotal() > 0);
@@ -90,8 +90,8 @@ public class JustETFTest {
 	}
 	
 	@Test
-	public void testGetQuoteWithLocaleIT() {
-		Quote quote = JustETF.getQuote("IE00BK5BQT80", new Locale.Builder().setLanguage("it").setRegion("IT").build());
+	void testGetQuoteWithLocaleIT() {
+		Quote quote = new JustETF().getQuote("IE00BK5BQT80", new Locale.Builder().setLanguage("it").setRegion("IT").build());
 		assertNotNull(quote);
 		assertNotNull(quote.getLatestQuote());
 		assertNotNull(quote.getLatestQuote().getLocalized());
@@ -100,8 +100,8 @@ public class JustETFTest {
 	}
 	
 	@Test
-	public void testGetQuoteWithLocaleUK() {
-		Quote quote = JustETF.getQuote("IE00BK5BQT80", Locale.UK);
+	void testGetQuoteWithLocaleUK() {
+		Quote quote = new JustETF().getQuote("IE00BK5BQT80", Locale.UK);
 		assertNotNull(quote);
 		assertNotNull(quote.getLatestQuote());
 		assertNotNull(quote.getLatestQuote().getLocalized());
@@ -110,8 +110,8 @@ public class JustETFTest {
 	}
 	
 	@Test
-	public void testGetQuoteWithLocaleCH() {
-		Quote quote = JustETF.getQuote("IE00BK5BQT80", new Locale.Builder().setLanguage("en").setRegion("CH").build());
+	void testGetQuoteWithLocaleCH() {
+		Quote quote = new JustETF().getQuote("IE00BK5BQT80", new Locale.Builder().setLanguage("en").setRegion("CH").build());
 		assertNotNull(quote);
 		assertNotNull(quote.getLatestQuote());
 		assertNotNull(quote.getLatestQuote().getLocalized());

@@ -40,9 +40,7 @@ public class JustETF {
 	
 	private static final Logger logger = LoggerFactory.getLogger(JustETF.class);
 	
-	private JustETF() {}
-	
-	public static Quote getQuote(String isin, Locale locale) {
+	public Quote getQuote(String isin, Locale locale) {
 		Quote quote = null;
 		Currency currency = Currency.getInstance(locale);
 		
@@ -70,7 +68,7 @@ public class JustETF {
 		return quote;
 	}	
 	
-	public static SearchResponse search(Locale locale, String query, int start, int length) {
+	public SearchResponse search(Locale locale, String query, int start, int length) {
 		SearchResponse response = null;
 		
 		try {
@@ -95,11 +93,11 @@ public class JustETF {
 		return response;
 	}
 	
-	public static SearchResponse search(Locale locale, String query) {
+	public SearchResponse search(Locale locale, String query) {
 		return search(locale, query, DEFAULT_START, DEFAULT_LENGTH);
 	}
 	
-	public static SearchResponse searchWithQuote(Locale locale, String query, int start, int length) {
+	public SearchResponse searchWithQuote(Locale locale, String query, int start, int length) {
 		SearchResponse response = search(locale, query, start, length);
 		
 		if (response != null && response.getData() != null && !response.getData().isEmpty()) {
@@ -112,11 +110,11 @@ public class JustETF {
 		return response;
 	}
 	
-	public static SearchResponse searchWithQuote(Locale locale, String query) {
+	public SearchResponse searchWithQuote(Locale locale, String query) {
 		return searchWithQuote(locale, query, DEFAULT_START, DEFAULT_LENGTH);
 	}
 	
-	private static String getUrlEncodedParams(Locale locale, int start, int length, String query) {
+	private String getUrlEncodedParams(Locale locale, int start, int length, String query) {
 		return Map.of(PARAM_DRAW, "0", // ???
 					  PARAM_START, String.valueOf(start),
 					  PARAM_LENGTH, String.valueOf(length),
