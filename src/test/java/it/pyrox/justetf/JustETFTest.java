@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Locale;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
 import it.pyrox.justetf.model.ETF;
@@ -38,7 +39,7 @@ class JustETFTest {
 		assertEquals(responseFirst25.getRecordsFiltered(), responseFirst25.getRecordsTotal());
 		assertNotNull(responseFirst25.getData());
 		assertTrue(responseFirst25.getData().size() > 0 && responseFirst25.getData().size() <= 25);
-		SearchResponse responseFrom10To20 = new JustETF().search(Locale.ITALY, null, 10, 10);
+		SearchResponse responseFrom10To20 = new JustETF().search(Locale.ITALY, null, 10, 10, new ObjectMapper());
 		assertNotNull(responseFrom10To20);
 		assertNotNull(responseFrom10To20.getRecordsTotal());
 		assertTrue(responseFrom10To20.getRecordsTotal() > 0);
@@ -55,7 +56,7 @@ class JustETFTest {
 			assertEquals(element.getName(), elementToCompare.getName());
 		}
 	}
-	
+
 	@Test
 	void testSearchWithLocaleITAndQueryByTickerAndNoRangeThenReturnOneResult() {
 		SearchResponse response = new JustETF().search(Locale.ITALY, "vwce");
@@ -91,7 +92,7 @@ class JustETFTest {
 	
 	@Test
 	void testGetQuoteWithLocaleIT() {
-		Quote quote = new JustETF().getQuote("IE00BK5BQT80", new Locale.Builder().setLanguage("it").setRegion("IT").build());
+		Quote quote = new JustETF().getQuote("IE00BK5BQT80", new Locale.Builder().setLanguage("it").setRegion("IT").build(), new ObjectMapper());
 		assertNotNull(quote);
 		assertNotNull(quote.getLatestQuote());
 		assertNotNull(quote.getLatestQuote().getLocalized());
@@ -101,7 +102,7 @@ class JustETFTest {
 	
 	@Test
 	void testGetQuoteWithLocaleUK() {
-		Quote quote = new JustETF().getQuote("IE00BK5BQT80", Locale.UK);
+		Quote quote = new JustETF().getQuote("IE00BK5BQT80", Locale.UK, new ObjectMapper());
 		assertNotNull(quote);
 		assertNotNull(quote.getLatestQuote());
 		assertNotNull(quote.getLatestQuote().getLocalized());
@@ -111,7 +112,7 @@ class JustETFTest {
 	
 	@Test
 	void testGetQuoteWithLocaleCH() {
-		Quote quote = new JustETF().getQuote("IE00BK5BQT80", new Locale.Builder().setLanguage("en").setRegion("CH").build());
+		Quote quote = new JustETF().getQuote("IE00BK5BQT80", new Locale.Builder().setLanguage("en").setRegion("CH").build(), new ObjectMapper());
 		assertNotNull(quote);
 		assertNotNull(quote.getLatestQuote());
 		assertNotNull(quote.getLatestQuote().getLocalized());

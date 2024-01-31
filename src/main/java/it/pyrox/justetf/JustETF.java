@@ -13,6 +13,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,60 +38,21 @@ public class JustETF {
 	private static final String PARAM_COUNTRY = "country";
 	private static final String PARAM_UNIVERSE_TYPE = "universeType";
 	private static final String PARAM_ETFS_PARAMS = "etfsParams";
-	
+
+	private ObjectMapper objectMapper;
+
 	private static final Logger logger = LoggerFactory.getLogger(JustETF.class);
-	
+
+	public JustETF() {
+		this.objectMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+	}
+
 	public Quote getQuote(String isin, Locale locale) {
-		Quote quote = null;
-		Currency currency = Currency.getInstance(locale);
-		
-		if (isin == null || isin.isEmpty() || locale == null || currency == null) {
-			return quote;
-		}
-		
-		try {
-			HttpRequest httpRequest = HttpRequest.newBuilder(new URI(BASE_URL + QUOTE_PATH_1 + isin + QUOTE_PATH_2 + "?locale=" + locale.getLanguage() + "&currency=" + currency.getCurrencyCode()))
-												 .GET()
-										         .build();
-			
-			HttpClient client = HttpClient.newHttpClient();
-			
-			HttpResponse<String> httpResponse = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-			
-			quote = new ObjectMapper().readValue(httpResponse.body(), Quote.class);					
-		} catch (URISyntaxException | IOException e) {
-			logger.debug(e.getMessage());
-		} catch (InterruptedException e) {
-			logger.debug(e.getMessage());
-			Thread.currentThread().interrupt();
-		}
-		
-		return quote;
-	}	
-	
+		return getQuote(isin, locale, objectMapper);
+	}
+
 	public SearchResponse search(Locale locale, String query, int start, int length) {
-		SearchResponse response = null;
-		
-		try {
-			HttpRequest httpRequest = HttpRequest.newBuilder(new URI(BASE_URL + SEARCH_PATH))
-												 .headers("Content-Type", "application/x-www-form-urlencoded")
-										         .POST(HttpRequest.BodyPublishers.ofString(getUrlEncodedParams(locale, start, length, query)))
-										         .build();
-			
-			HttpClient client = HttpClient.newHttpClient();
-			
-			HttpResponse<String> httpResponse = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
-			
-			response = new ObjectMapper().readValue(httpResponse.body(), SearchResponse.class);		
-			
-		} catch (URISyntaxException | IOException e) {
-			logger.debug(e.getMessage());
-		} catch (InterruptedException e) {
-			logger.debug(e.getMessage());
-			Thread.currentThread().interrupt();
-		}
-		
-		return response;
+		return search(locale, query, start, length, objectMapper);
 	}
 	
 	public SearchResponse search(Locale locale, String query) {
@@ -113,7 +75,64 @@ public class JustETF {
 	public SearchResponse searchWithQuote(Locale locale, String query) {
 		return searchWithQuote(locale, query, DEFAULT_START, DEFAULT_LENGTH);
 	}
-	
+
+	// Use the protected method in tests to pass an ObjectMapper that throws error if a property isn't mapped
+	// The public method in this class, instead, uses an ObjectMapper that ignores unkown properties
+	protected Quote getQuote(String isin, Locale locale, ObjectMapper objectMapper) {
+		Quote quote = null;
+		Currency currency = Currency.getInstance(locale);
+
+		if (isin == null || isin.isEmpty() || locale == null || currency == null) {
+			return quote;
+		}
+
+		try {
+			HttpRequest httpRequest = HttpRequest.newBuilder(new URI(BASE_URL + QUOTE_PATH_1 + isin + QUOTE_PATH_2 + "?locale=" + locale.getLanguage() + "&currency=" + currency.getCurrencyCode()))
+					.GET()
+					.build();
+
+			HttpClient client = HttpClient.newHttpClient();
+
+			HttpResponse<String> httpResponse = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+
+			quote = objectMapper.readValue(httpResponse.body(), Quote.class);
+		} catch (URISyntaxException | IOException e) {
+			logger.debug(e.getMessage());
+		} catch (InterruptedException e) {
+			logger.debug(e.getMessage());
+			Thread.currentThread().interrupt();
+		}
+
+		return quote;
+	}
+
+	// Use the protected method in tests to pass an ObjectMapper that throws error if a property isn't mapped
+	// The public method in this class, instead, uses an ObjectMapper that ignores unkown properties
+	protected SearchResponse search(Locale locale, String query, int start, int length, ObjectMapper objectMapper) {
+		SearchResponse response = null;
+
+		try {
+			HttpRequest httpRequest = HttpRequest.newBuilder(new URI(BASE_URL + SEARCH_PATH))
+					.headers("Content-Type", "application/x-www-form-urlencoded")
+					.POST(HttpRequest.BodyPublishers.ofString(getUrlEncodedParams(locale, start, length, query)))
+					.build();
+
+			HttpClient client = HttpClient.newHttpClient();
+
+			HttpResponse<String> httpResponse = client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
+
+			response = objectMapper.readValue(httpResponse.body(), SearchResponse.class);
+
+		} catch (URISyntaxException | IOException e) {
+			logger.debug(e.getMessage());
+		} catch (InterruptedException e) {
+			logger.debug(e.getMessage());
+			Thread.currentThread().interrupt();
+		}
+
+		return response;
+	}
+
 	private String getUrlEncodedParams(Locale locale, int start, int length, String query) {
 		return Map.of(PARAM_DRAW, "0", // ???
 					  PARAM_START, String.valueOf(start),
